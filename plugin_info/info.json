@@ -1,0 +1,19 @@
+{
+	"id" : "doxeo",
+	"name" : "Doxeo",
+	"description" : "Plugin pour récuperer et utiliser les données de Doxeo",
+	"licence" : "AGPL",
+	"author" : "Oxeo",
+	"require" : "3.2",
+	"category" : "automation protocol",
+	"hasDependency" : false,
+	"hasOwnDeamon" : true,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://jeedom.github.io/plugin-template/#language#/changelog",
+	"documentation" : "https://jeedom.github.io/plugin-template/#language#/",
+	"link" : {
+		"oxeo":"www.oxeo.fr"
+	},
+	"language" : ["fr_FR"],
+	"compatibility" : ["miniplus","smart","rpi","docker","diy","mobile"]
+}
