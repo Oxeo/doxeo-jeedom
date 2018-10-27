@@ -241,7 +241,34 @@ class doxeoCmd extends cmd {
         $id = $this->getEqLogic()->getLogicalId();
         $command = $this->getConfiguration('command');
         
-        $request = 'switch/change_switch_status?id=' . $id . '&status=' . $command;
+        if ($id == "gateway") {
+            $title = urlencode(trim($_options['title']));
+            $message = urlencode(trim($_options['message']));
+            if ($command == "sensor") {
+                $request = 'sensor/set_value.js?id=' . $title . '&value=' . $message;
+            } else if ($command == "switch") {
+                $request = 'switch/update_switch_status.js?id=' . $title . '&status=' . $message;
+            }
+        } else if ($id == "fcm") {
+            $title = urlencode(trim($_options['title']));
+            $message = urlencode(trim($_options['message']));
+            if ($this->getName() == "info") {
+                $request = 'fcm.js?type=INFO&title=' . $title . '&message=' . $message;
+            } else if ($this->getName() == "warning") {
+                $request = 'fcm.js?type=WARNING&title=' . $title . '&message=' . $message;
+            } else if ($this->getName() == "alert") {
+                $request = 'fcm.js?type=ALERT&title=' . $title . '&message=' . $message;
+            }
+        } else if ($id == "sms") {
+            $message = urlencode(trim($_options['message']));
+            $number = $command;
+            $request = 'sms.js?number=' . $number . '&message=' . $message;
+        } else if ($id == "execute_cmd") {
+            $cmd = urlencode($command);
+            $request = 'script/execute_cmd.js?cmd=' . $cmd;
+        } else {
+            $request = 'switch/change_switch_status?id=' . $id . '&status=' . $command;
+        }
         log::add('doxeo', 'info', 'send request: ' . $request);
         
         doxeo::callDoxeoMonitor($request);

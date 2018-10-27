@@ -37,27 +37,29 @@ if (!is_array($results)) {
 if (isset($results['type'])) {
 	$eqLogic = doxeo::byLogicalId($results['id'], 'doxeo');
 	if (is_object($eqLogic)) {
-		foreach ($eqLogic->getCmd('info') as $cmd) {
-			log::add('doxeo', 'info', $results['type'] . ';' . $results['id'] . ';' . $results['value'] );
-
-			if ($cmd->getSubType() == 'binary') {
-				if ($results['value'] == "started") {
-					$results['value'] = 1;
-				}
-
-				if ($results['value'] == "close") {
-					$results['value'] = 1;
-				}
-
-				if ($results['value'] == "event") {
-					$results['value'] = 1;
-				}
-			}
-
-			$cmd->event($results['value']);
-		}
-		if ($result['CommandClass'] == '128') {
+		if (isset($results['battery'])) {
+			log::add('doxeo', 'info', $results['type'] . ';battery;' . $results['value'] );
 			$eqLogic->batteryStatus($result['value']);
+		} else {
+			foreach ($eqLogic->getCmd('info') as $cmd) {
+				log::add('doxeo', 'info', $results['type'] . ';' . $results['id'] . ';' . $results['value'] );
+
+				if ($cmd->getSubType() == 'binary') {
+					if ($results['value'] == "started") {
+						$results['value'] = 1;
+					}
+
+					if ($results['value'] == "close") {
+						$results['value'] = 1;
+					}
+
+					if ($results['value'] == "event") {
+						$results['value'] = 1;
+					}
+				}
+
+				$cmd->event($results['value']);
+			}
 		}
 	}
 }
