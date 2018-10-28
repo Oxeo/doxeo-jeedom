@@ -35,7 +35,8 @@ if (!is_array($results)) {
 }
 
 if (isset($results['type'])) {
-	$eqLogic = doxeo::byLogicalId($results['id'], 'doxeo');
+	$logicalId = $results['type'] . "_" . $results['id'];
+	$eqLogic = doxeo::byLogicalId($logicalId, 'doxeo');
 	if (is_object($eqLogic)) {
 		if (isset($results['battery'])) {
 			log::add('doxeo', 'info', $results['type'] . ';battery;' . $results['value'] );
