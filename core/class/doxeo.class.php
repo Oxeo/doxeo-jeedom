@@ -89,8 +89,8 @@ class doxeo extends eqLogic {
         if ($daemonViewPath != '') {
             $cmd .= ' --path ' . $daemonViewPath;
         }
-		$cmd .= ' --callback ' . $callback;
-		$cmd .= ' --apikey ' . jeedom::getApiKey('doxeo');
+		//$cmd .= ' --callback ' . $callback;
+		//$cmd .= ' --apikey ' . jeedom::getApiKey('doxeo');
 
         log::add('doxeo', 'info', 'Starting doxeo daemon: ' . $cmd);
         exec($cmd . ' >> ' . log::getPathToLog('doxeo') . ' 2>&1 &');
@@ -266,12 +266,20 @@ class doxeoCmd extends cmd {
         } else if ($id == "execute_cmd") {
             $cmd = urlencode($command);
             $request = 'script/execute_cmd.js?cmd=' . $cmd;
+        } else if (strpos($id, 'switch_') == 0) {
+            $request = 'switch/change_switch_status?id=' . str_replace("switch_", "", $id) . '&status=' . $command;
         } else {
-            $request = 'switch/change_switch_status?id=' . $id . '&status=' . $command;
+            log::add('doxeo', 'error', 'unknown logical id ' . $id, 'unknownId');
         }
         log::add('doxeo', 'info', 'send request: ' . $request);
         
         doxeo::callDoxeoMonitor($request);
+    }
+
+    private function startsWith($haystack, $needle)
+    {
+         $length = strlen($needle);
+         return (substr($haystack, 0, $length) === $needle);
     }
 
     /*     * **********************Getteur Setteur*************************** */

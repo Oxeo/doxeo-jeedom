@@ -18,7 +18,7 @@
 
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
-if (!jeedom::apiAccess(init('apikey'), 'doxeo')) {
+if (!jeedom::apiAccess(init('apikey'), 'doxeo') && !jeedom::apiAccess(init('apikey'), 'core')) {
 	echo __('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
 	die();
 }
@@ -31,6 +31,30 @@ if (isset($_GET['test'])) {
 $results = json_decode(file_get_contents("php://input"), true);
 if (!is_array($results)) {
     echo 'NO JSON';
+	die();
+}
+
+if (isset($results['gateway'])) {
+	$gateway = $results['gateway'];
+	$nodeid = $results['sender'];
+	$sensor = $results['sensor'];
+	$type = $results['type'];
+	$value = $results['payload'];
+	$messagetype = $results['messagetype'];
+
+	switch ($messagetype) {
+	case 'saveValue' : mySensors::saveValue($gateway, $nodeid,$sensor,$type, $value); break;//saveValue($gateway, $nodeid,$sensor,$type, $value)
+	case 'saveSketchName' : mySensors::saveSketchNameEvent($gateway, $nodeid, $value); break;//saveSketchVersion($gateway, $nodeid, $value)
+	case 'saveSketchVersion' : mySensors::saveSketchVersion($gateway, $nodeid, $value); break;//saveSketchVersion($gateway, $nodeid, $value)
+	case 'saveLibVersion' : mySensors::saveLibVersion($gateway, $nodeid, $value); break;//saveLibVersion($gateway, $nodeid, $value)
+	case 'saveSensor' : mySensors::saveSensor($gateway, $nodeid, $sensor, $type); break;//saveSensor($gateway, $nodeid, $sensor, $value)
+	case 'saveBatteryLevel' : mySensors::saveBatteryLevel($gateway, $nodeid, $value); break; // saveBatteryLevel($gateway, $nodeid, $value)
+	case 'saveGateway' : mySensors::saveGateway($gateway, $value); break;//saveGateway($gateway, $value)
+	case 'getValue' : mySensors::getValue($gateway,$nodeid,$sensor,$type); break;//getValue($gateway,$nodeid,$sensor,$type)
+	case 'getNextSensorId' : mySensors::getNextSensorId($gateway); break;//getNextSensorId($gateway)
+	}
+
+	echo 'success';
 	die();
 }
 
@@ -63,8 +87,14 @@ if (isset($results['type'])) {
 			}
 		}
 	}
+
+	echo 'success';
+	die();
 }
 
 if (isset($results['message'])) {
 	log::add('doxeo', 'error', $results['message']);
+
+	echo 'success';
+	die();
 }
