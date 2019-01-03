@@ -62,12 +62,16 @@ if (isset($results['type'])) {
 	$logicalId = $results['type'] . "_" . $results['id'];
 	$eqLogic = doxeo::byLogicalId($logicalId, 'doxeo');
 	if (is_object($eqLogic)) {
-		if (isset($results['battery'])) {
+		if ($results['subtype'] == 'battery') {
 			log::add('doxeo', 'info', $results['type'] . ';battery;' . $results['value'] );
 			$eqLogic->batteryStatus($result['value']);
 		} else {
 			foreach ($eqLogic->getCmd('info') as $cmd) {
 				log::add('doxeo', 'info', $results['type'] . ';' . $results['id'] . ';' . $results['value'] );
+
+				if ($cmd->getConfiguration("instance", 1) != 1 && $cmd->getConfiguration("instance") != $results['subtype']) {
+					continue;
+				}
 
 				if ($cmd->getSubType() == 'binary') {
 					if ($results['value'] == "started") {
